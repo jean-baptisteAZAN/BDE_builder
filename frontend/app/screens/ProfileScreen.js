@@ -10,6 +10,7 @@ import { auth } from "../../firebaseConfig";
 import { API_URL } from '@env';
 
 const ProfileScreen = () => {
+  console.log(API_URL, "API_URL")
   const { user } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState(null);
   const [image, setImage] = useState(null);
