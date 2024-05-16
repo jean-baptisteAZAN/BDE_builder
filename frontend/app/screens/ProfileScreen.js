@@ -7,6 +7,7 @@ import colorsConfig from '../../assets/config/colorsConfig';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
+import { API_URL } from '@env';
 
 const ProfileScreen = () => {
   const { user } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const ProfileScreen = () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          const response = await fetch('http://localhost:3000/api/userinfo', {
+          const response = await fetch(`${API_URL}/api/userinfo`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -40,7 +41,6 @@ const ProfileScreen = () => {
   }, []);
 
   const pickImage = async () => {
-    // Demande la permission d'accès à la galerie
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -48,7 +48,6 @@ const ProfileScreen = () => {
       return;
     }
 
-    // Sélectionner une image
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -73,7 +72,6 @@ const ProfileScreen = () => {
     const downloadURL = await getDownloadURL(storageRef);
     setImage(downloadURL);
 
-    // Mettre à jour l'URL de la photo de profil dans Firestore
     const db = getFirestore();
     await updateDoc(doc(db, "users", user.uid), {
       profilePicture: downloadURL,

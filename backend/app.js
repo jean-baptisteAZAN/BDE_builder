@@ -9,7 +9,6 @@ app.use(cors({ origin: 'http://192.168.0.14:5173' }));
 const serviceAccount = require('./firebase-key.json');
 
 
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
