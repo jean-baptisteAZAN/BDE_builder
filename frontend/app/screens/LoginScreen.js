@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/FontAwesome";
-import colorsConfig from "../../assets/config/colorsConfig";
-import {  signInWithEmailAndPassword   } from 'firebase/auth';
+import config from "../../assets/config/colorsConfig";
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../../firebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -34,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      alert("Adresse email ou mot de passe incorrect.");
     }
   };
 
@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={colorsConfig.backgroundImage}
+      source={config.backgroundImage}
       style={styles.container}
     >
       <StyledText className="text-2xl text-white">Connectez-vous</StyledText>

@@ -7,12 +7,10 @@ import {
   Text,
   ImageBackground,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Picker } from "@react-native-picker/picker";
-import colorsConfig from "../../assets/config/colorsConfig";
+import config from "../../assets/config/colorsConfig";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../../firebaseConfig";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
@@ -43,21 +41,20 @@ const Signup = ({ navigation }) => {
         lastName: lastName,
         promotion: promotion,
         association: association,
-        uid: user.uid
+        uid: user.uid,
+        role: "user",
       });
-
-      console.log("User created and data saved in Firestore");
       navigation.navigate("/login");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      alert("Erreur lors de la création du compte.");
     }
   };
 
   return (
     <ImageBackground
-      source={colorsConfig.backgroundImage}
+      source={config.backgroundImage}
       style={styles.container}
     >
       <StyledText className="text-2xl text-white mt-40">Créer un compte</StyledText>

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ImageBackground } from "react-native";
 import CardHome from "../components/CardHome";
-import colorsConfig from "../../assets/config/colorsConfig";
+import config from "../../assets/config/colorsConfig";
 
 const HomeScreen = ({ navigation }) => {
   const handlePress = (route) => {
@@ -10,7 +10,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={colorsConfig.backgroundImage}
+      source={config.backgroundImage}
       style={styles.container}
     >
       <CardHome
