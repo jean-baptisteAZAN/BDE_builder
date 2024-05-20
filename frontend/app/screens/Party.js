@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import config from "../../assets/config/colorsConfig";
@@ -23,6 +24,8 @@ const Party = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [nextParty, setNextParty] = useState(null);
   const [pastParties, setPastParties] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const db = getFirestore();
@@ -66,6 +69,20 @@ const Party = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
+  const handleAddParty = async (newParty) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const db = getFirestore();
+      await db.collection("parties").add(newParty);
+      setModalVisible(false);
+    } catch (err) {
+      setError("Erreur lors de l'ajout de la soirée");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const renderPartyItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => navigation.navigate("PartyPhotos", { partyId: item.id })}
@@ -89,12 +106,18 @@ const Party = ({ navigation }) => {
             onPress={() => setModalVisible(true)}
             mode="contained"
             style={styles.addButton}
+            disabled={isLoading} // Désactiver le bouton si chargement
           >
-            Ajouter une soirée
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              "Ajouter une soirée"
+            )}
           </Button>
           <AddPartyModal
             visible={isModalVisible}
             onClose={() => setModalVisible(false)}
+            onAddParty={handleAddParty} // Passer la fonction d'ajout
           />
         </>
       )}
@@ -121,6 +144,7 @@ const Party = ({ navigation }) => {
       ) : (
         <Text style={styles.text}>No upcoming parties</Text>
       )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <FlatList
         data={pastParties}
         renderItem={renderPartyItem}
@@ -156,6 +180,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     marginTop: 20,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
   },
   mask: {
     backgroundColor: "rgba(0,0,0,0.5)",

@@ -8,7 +8,7 @@ import {
   Alert,
   Modal,
   TouchableOpacity,
-  Platform,
+  ImageBackground,
 } from "react-native";
 import { Button, ProgressBar } from "react-native-paper";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import { UserContext } from "../context/UserContext";
+import config from "../../assets/config/colorsConfig";
 
 const PartyPhotos = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
@@ -25,7 +26,7 @@ const PartyPhotos = ({ route, navigation }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
 
   useEffect(() => {
     const db = getFirestore();
@@ -51,7 +52,6 @@ const PartyPhotos = ({ route, navigation }) => {
         await uploadImages(uris);
       }
     } catch (error) {
-      console.error("Error picking images: ", error);
       Alert.alert("Error", "An error occurred while picking the images.");
     }
   };
@@ -105,19 +105,19 @@ const PartyPhotos = ({ route, navigation }) => {
     }
   };
 
-  const renderPhotoItem = ({ item }) => (
-    <TouchableOpacity onPress={() => openModal(item)}>
+  const renderPhotoItem = ({ item, index }) => (
+    <TouchableOpacity onPress={() => openModal(index)}>
       <Image source={{ uri: item }} style={styles.photo} />
     </TouchableOpacity>
   );
 
-  const openModal = (photo) => {
-    setSelectedPhoto(photo);
+  const openModal = (index) => {
+    setSelectedPhotoIndex(index);
     setModalVisible(true);
   };
 
   const closeModal = () => {
-    setSelectedPhoto(null);
+    setSelectedPhotoIndex(null);
     setModalVisible(false);
   };
 
@@ -129,7 +129,7 @@ const PartyPhotos = ({ route, navigation }) => {
         return;
       }
       const downloadResumable = FileSystem.createDownloadResumable(
-        selectedPhoto,
+        photos[selectedPhotoIndex],
         FileSystem.documentDirectory + 'downloaded_photo.jpg'
       );
 
@@ -142,17 +142,24 @@ const PartyPhotos = ({ route, navigation }) => {
     }
   };
 
+  const navigatePhoto = (direction) => {
+    if (direction === 'next') {
+      setSelectedPhotoIndex((prevIndex) => (prevIndex + 1) % photos.length);
+    } else if (direction === 'prev') {
+      setSelectedPhotoIndex((prevIndex) => (prevIndex - 1 + photos.length) % photos.length);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <ImageBackground source={config.backgroundImage} style={styles.container}>
       {user && user.role === "admin" && (
-        <Button onPress={pickImages} mode="contained" style={styles.addButton} disabled={uploading}>
-          {uploading ? "Uploading..." : "Add Photos"}
-        </Button>
-      )}
-      {uploading && (
-        <View style={styles.progressBarContainer}>
-          <Text>Uploading: {Math.round(progress)}%</Text>
-          <ProgressBar progress={progress / 100} style={styles.progressBar} />
+        <View style={styles.addButtonContainer}>
+          <Button onPress={pickImages} mode="contained" style={styles.addButton} disabled={uploading}>
+            Add Photos
+          </Button>
+          {uploading && (
+            <ProgressBar progress={progress / 100} style={styles.uploadProgressBar} />
+          )}
         </View>
       )}
       <FlatList
@@ -162,7 +169,7 @@ const PartyPhotos = ({ route, navigation }) => {
         numColumns={3}
         contentContainerStyle={styles.photosContainer}
       />
-      {selectedPhoto && (
+      {selectedPhotoIndex !== null && (
         <Modal
           animationType="slide"
           transparent={true}
@@ -170,7 +177,13 @@ const PartyPhotos = ({ route, navigation }) => {
           onRequestClose={closeModal}
         >
           <View style={styles.modalView}>
-            <Image source={{ uri: selectedPhoto }} style={styles.modalPhoto} />
+            <TouchableOpacity onPress={() => navigatePhoto('prev')} style={styles.arrowButtonLeft}>
+              <Text style={styles.arrowText}>{"<"}</Text>
+            </TouchableOpacity>
+            <Image source={{ uri: photos[selectedPhotoIndex] }} style={styles.modalPhoto} />
+            <TouchableOpacity onPress={() => navigatePhoto('next')} style={styles.arrowButtonRight}>
+              <Text style={styles.arrowText}>{">"}</Text>
+            </TouchableOpacity>
             <Button onPress={downloadPhoto} mode="contained" style={styles.downloadButton}>
               Download Photo
             </Button>
@@ -180,7 +193,7 @@ const PartyPhotos = ({ route, navigation }) => {
           </View>
         </Modal>
       )}
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -190,7 +203,16 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
+  addButtonContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
   addButton: {
+    marginBottom: 10,
+  },
+  uploadProgressBar: {
+    width: '80%',
+    height: 10,
     marginBottom: 10,
   },
   progressBarContainer: {
@@ -208,7 +230,7 @@ const styles = StyleSheet.create({
   },
   photo: {
     width: 100,
-    height: 100,
+    height: 75, // 4:3 aspect ratio for rendering
     margin: 5,
   },
   modalView: {
@@ -219,8 +241,28 @@ const styles = StyleSheet.create({
   },
   modalPhoto: {
     width: 300,
-    height: 300,
+    height: 225, // 4:3 aspect ratio for rendering
     marginBottom: 20,
+  },
+  arrowButtonLeft: {
+    position: "absolute",
+    top: "50%",
+    left: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 10,
+    borderRadius: 5,
+  },
+  arrowButtonRight: {
+    position: "absolute",
+    top: "50%",
+    right: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 10,
+    borderRadius: 5,
+  },
+  arrowText: {
+    color: "white",
+    fontSize: 30,
   },
   downloadButton: {
     marginBottom: 10,
