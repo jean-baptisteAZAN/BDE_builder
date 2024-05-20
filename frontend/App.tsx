@@ -29,28 +29,65 @@ const AppNavigator = () => {
           <TouchableOpacity onPress={() => navigation.navigate("/home")}>
             <Image
               source={config.logo}
-              style={{ width: 40, height: 40, marginLeft: 10, borderRadius: 20}}
+              style={{
+                width: 40,
+                height: 40,
+                marginLeft: 10,
+                borderRadius: 20,
+              }}
             />
           </TouchableOpacity>
         ),
         headerRight: () => (
           <TouchableOpacity onPress={() => navigation.navigate("/profile")}>
             <Image
-              source={user && user.profilePictureUrl ? { uri: user.profilePictureUrl } :
-              require("./assets/images/placeholder_pdp.jpeg")}
-              style={{ width: 40, height: 40, marginLeft: 10, borderRadius: 20}}
+              source={
+                user && user.profilePictureUrl
+                  ? { uri: user.profilePictureUrl }
+                  : require("./assets/images/placeholder_pdp.jpeg")
+              }
+              style={{
+                width: 40,
+                height: 40,
+                marginLeft: 10,
+                borderRadius: 20,
+              }}
             />
           </TouchableOpacity>
         ),
       })}
     >
-      <Stack.Screen name="/login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="/signup" component={Signup} options={{ headerShown: false }} />
-      <Stack.Screen name="/home" component={HomeScreen} options={{ headerTitle: config.BdeName}}/>
+      <Stack.Screen
+        name="/login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="/signup"
+        component={Signup}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="/home"
+        component={HomeScreen}
+        options={{ headerTitle: config.BdeName }}
+      />
       <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="Party" component={Party} options={{ headerTitle: "Nos Soirées"}} />
-      <Stack.Screen name="/profile" component={ProfileScreen} options={{ headerTitle: "Ton Profil"}}/>
-      <Stack.Screen name="PartyPhotos" component={PartyPhotos} options={{ headerTitle: "Photos"}} />
+      <Stack.Screen
+        name="Party"
+        component={Party}
+        options={{ headerTitle: "Nos Soirées" }}
+      />
+      <Stack.Screen
+        name="/profile"
+        component={ProfileScreen}
+        options={{ headerTitle: "Ton Profil" }}
+      />
+      <Stack.Screen
+        name="PartyPhotos"
+        component={PartyPhotos}
+        options={{ headerTitle: "Photos" }}
+      />
     </Stack.Navigator>
   );
 };

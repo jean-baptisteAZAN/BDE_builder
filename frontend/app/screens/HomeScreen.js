@@ -9,10 +9,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={config.backgroundImage}
-      style={styles.container}
-    >
+    <ImageBackground source={config.backgroundImage} style={styles.container}>
       <CardHome
         title="Nos Soirées"
         path={

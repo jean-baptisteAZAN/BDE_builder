@@ -11,9 +11,9 @@ import {
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/FontAwesome";
 import config from "../../assets/config/colorsConfig";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StyledText = styled(Text);
 
@@ -26,10 +26,14 @@ const LoginScreen = ({ navigation }) => {
   const onLogin = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const token = user.accessToken;
-      await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem("userToken", token);
       navigation.navigate("/home");
     } catch (error) {
       const errorCode = error.code;
@@ -43,20 +47,14 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={config.backgroundImage}
-      style={styles.container}
-    >
+    <ImageBackground source={config.backgroundImage} style={styles.container}>
       <StyledText className="text-2xl text-white">Connectez-vous</StyledText>
       <View style={styles.inputContainer}>
         <View style={styles.iconContainer}>
           <Icon name="envelope" size={20} color="#fff" />
         </View>
         <TextInput
-          style={[
-            styles.input,
-            emailFocused && styles.inputFocused,
-          ]}
+          style={[styles.input, emailFocused && styles.inputFocused]}
           placeholder="Email"
           value={email}
           placeholderTextColor="white"
@@ -72,10 +70,7 @@ const LoginScreen = ({ navigation }) => {
           <Icon name="lock" size={20} color="#fff" />
         </View>
         <TextInput
-          style={[
-            styles.input,
-            passwordFocused && styles.inputFocused,
-          ]}
+          style={[styles.input, passwordFocused && styles.inputFocused]}
           placeholder="Mot de passe"
           value={password}
           placeholderTextColor="white"

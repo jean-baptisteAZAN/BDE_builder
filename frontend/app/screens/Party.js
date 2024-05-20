@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import config from "../../assets/config/colorsConfig";
 import { styled } from "nativewind";
 import AddPartyModal from "../components/addPartyModal";
 import { UserContext } from "../context/UserContext";
-import { Button } from 'react-native-paper';
+import { Button } from "react-native-paper";
 
 const StyledView = styled(View);
 const StyledImage = styled(ImageBackground);
@@ -27,16 +34,22 @@ const Party = ({ navigation }) => {
 
       if (partiesList.length > 0) {
         const currentDate = new Date();
-        const futureParties = partiesList.filter(party => new Date(party.date) >= currentDate);
-        let pastPartiesList = partiesList.filter(party => new Date(party.date) < currentDate);
-        pastPartiesList = pastPartiesList.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+        const futureParties = partiesList.filter(
+          (party) => new Date(party.date) >= currentDate,
+        );
+        let pastPartiesList = partiesList.filter(
+          (party) => new Date(party.date) < currentDate,
+        );
+        pastPartiesList = pastPartiesList
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 3);
 
         if (futureParties.length > 0) {
           const closestParty = futureParties.reduce((closest, party) => {
             const partyDate = new Date(party.date);
             const closestDate = new Date(closest.date);
 
-            return (partyDate < closestDate) ? party : closest;
+            return partyDate < closestDate ? party : closest;
           }, futureParties[0]);
 
           setNextParty(closestParty);
@@ -54,23 +67,35 @@ const Party = ({ navigation }) => {
   }, []);
 
   const renderPartyItem = ({ item }) => (
-    <StyledImage source={{ uri: item.imageUrl }} className="w-28 h-28 flex items-center justify-center rounded-2xl m-1">
-      <View style={styles.smallMask}>
-        <Text style={styles.smallPartyTitle}>
-          {item.title}
-        </Text>
-      </View>
-    </StyledImage>
+    <TouchableOpacity
+      onPress={() => navigation.navigate("PartyPhotos", { partyId: item.id })}
+    >
+      <StyledImage
+        source={{ uri: item.imageUrl }}
+        className="w-28 h-28 flex items-center justify-center rounded-2xl m-1"
+      >
+        <View style={styles.smallMask}>
+          <Text style={styles.smallPartyTitle}>{item.title}</Text>
+        </View>
+      </StyledImage>
+    </TouchableOpacity>
   );
 
   return (
     <ImageBackground source={config.backgroundImage} style={styles.container}>
       {user && user.role === "admin" && (
         <>
-          <Button onPress={() => setModalVisible(true)} mode="contained" style={styles.addButton}>
+          <Button
+            onPress={() => setModalVisible(true)}
+            mode="contained"
+            style={styles.addButton}
+          >
             Ajouter une soirée
           </Button>
-          <AddPartyModal visible={isModalVisible} onClose={() => setModalVisible(false)} />
+          <AddPartyModal
+            visible={isModalVisible}
+            onClose={() => setModalVisible(false)}
+          />
         </>
       )}
       <StyledView className="flex flex-row bg-gray-400 rounded-2xl w-[90%] p-4 items-center justify-between">
@@ -82,14 +107,15 @@ const Party = ({ navigation }) => {
         </TouchableOpacity>
       </StyledView>
       {nextParty ? (
-        <StyledImage source={{ uri: nextParty.imageUrl }} className="w-80 h-60 flex items-center justify-center rounded-2xl mt-10">
+        <StyledImage
+          source={{ uri: nextParty.imageUrl }}
+          className="w-80 h-60 flex items-center justify-center rounded-2xl mt-10"
+        >
           <View style={styles.mask}>
             <Text style={styles.partyTitle}>
               {new Date(nextParty.date).toLocaleDateString()}
             </Text>
-            <Text style={styles.partyTitle}>
-              {nextParty.title}
-            </Text>
+            <Text style={styles.partyTitle}>{nextParty.title}</Text>
           </View>
         </StyledImage>
       ) : (

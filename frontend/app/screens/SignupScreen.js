@@ -11,7 +11,7 @@ import {
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/FontAwesome";
 import config from "../../assets/config/colorsConfig";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
@@ -32,7 +32,11 @@ const Signup = ({ navigation }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
 
       await setDoc(doc(db, "users", user.uid), {
@@ -48,26 +52,25 @@ const Signup = ({ navigation }) => {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert("Erreur lors de la création du compte.");
+      alert("Erreur lors de la création du compte." + errorMessage);
     }
   };
 
   return (
-    <ImageBackground
-      source={config.backgroundImage}
-      style={styles.container}
-    >
-      <StyledText className="text-2xl text-white mt-40">Créer un compte</StyledText>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+    <ImageBackground source={config.backgroundImage} style={styles.container}>
+      <StyledText className="text-2xl text-white mt-10">
+        Créer un compte
+      </StyledText>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
             <Icon name="user" size={20} color="#fff" />
           </View>
           <TextInput
-            style={[
-              styles.input,
-              emailFocused && styles.inputFocused,
-            ]}
+            style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Prénom"
             value={firstName}
             placeholderTextColor="white"
@@ -80,10 +83,7 @@ const Signup = ({ navigation }) => {
             <Icon name="user" size={20} color="#fff" />
           </View>
           <TextInput
-            style={[
-              styles.input,
-              emailFocused && styles.inputFocused,
-            ]}
+            style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Nom"
             value={lastName}
             placeholderTextColor="white"
@@ -96,10 +96,7 @@ const Signup = ({ navigation }) => {
             <Icon name="envelope" size={20} color="#fff" />
           </View>
           <TextInput
-            style={[
-              styles.input,
-              emailFocused && styles.inputFocused,
-            ]}
+            style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Email"
             value={email}
             placeholderTextColor="white"
@@ -115,10 +112,7 @@ const Signup = ({ navigation }) => {
             <Icon name="lock" size={20} color="#fff" />
           </View>
           <TextInput
-            style={[
-              styles.input,
-              passwordFocused && styles.inputFocused,
-            ]}
+            style={[styles.input, passwordFocused && styles.inputFocused]}
             placeholder="Mot de passe"
             value={password}
             placeholderTextColor="white"
@@ -134,10 +128,7 @@ const Signup = ({ navigation }) => {
             <Icon name="group" size={20} color="#fff" />
           </View>
           <TextInput
-            style={[
-              styles.input,
-              emailFocused && styles.inputFocused,
-            ]}
+            style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Fais-tu partie d'une asso ?"
             value={association}
             placeholderTextColor="white"
@@ -207,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   picker: {
-    justifyContent: 'center',
+    justifyContent: "center",
     height: 40,
     width: "100%",
     borderColor: "gray",
@@ -222,10 +213,10 @@ const styles = StyleSheet.create({
     color: "white",
   },
   hiddenPicker: {
-    position: 'absolute',
+    position: "absolute",
     top: -1000,
-    width: '100%',
-  }
+    width: "100%",
+  },
 });
 
 export default Signup;
