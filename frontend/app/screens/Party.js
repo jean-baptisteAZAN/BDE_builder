@@ -125,7 +125,7 @@ const Party = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate("Ticketing")}>
           <Text>Billetterie</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Calendar")}>
+        <TouchableOpacity onPress={() => navigation.navigate("/calendar")}>
           <Text>Calendrier</Text>
         </TouchableOpacity>
       </StyledView>

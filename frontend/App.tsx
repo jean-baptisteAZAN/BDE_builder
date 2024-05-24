@@ -12,6 +12,7 @@ import Signup from "./app/screens/SignupScreen";
 import ProfileScreen from "./app/screens/ProfileScreen";
 import PartyPhotos from "./app/screens/PartyPhotos";
 import config from "./assets/config/colorsConfig";
+import CalendarScreen from "./app/screens/Calendar";
 import { UserProvider, UserContext } from "./app/context/UserContext";
 
 const Stack = createNativeStackNavigator();
@@ -87,6 +88,11 @@ const AppNavigator = () => {
         name="PartyPhotos"
         component={PartyPhotos}
         options={{ headerTitle: "Photos" }}
+      />
+      <Stack.Screen
+        name="/calendar"
+        component={CalendarScreen}
+        options={{ headerTitle: "Calendrier" }}
       />
     </Stack.Navigator>
   );
