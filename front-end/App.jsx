@@ -10,6 +10,9 @@ import HomeScreen from './screens/HomeScreen';
 import Login from './screens/LoginScreen';
 import Signup from './screens/SignupScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import Party from './screens/Party';
+import PartyPhotos from './screens/PartyPhotos';
+import CalendarScreen from './screens/CalendarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -68,32 +71,31 @@ const AppNavigator = () => {
         component={HomeScreen}
         options={{headerTitle: config.BdeName}}
       />
-      {/*<Stack.Screen name="Settings" component={SettingsScreen} />*/}
-      {/*<Stack.Screen*/}
-      {/*  name="Party"*/}
-      {/*  component={Party}*/}
-      {/*  options={{ headerTitle: "Nos Soirées" }}*/}
-      {/*/>*/}
+      <Stack.Screen
+        name="/party"
+        component={Party}
+        options={{ headerTitle: "Nos Soirées" }}
+      />
       <Stack.Screen
         name="/profile"
         component={ProfileScreen}
         options={{ headerTitle: "Ton Profil" }}
       />
-      {/*<Stack.Screen*/}
-      {/*  name="PartyPhotos"*/}
-      {/*  component={PartyPhotos}*/}
-      {/*  options={{ headerTitle: "Photos" }}*/}
-      {/*/>*/}
-      {/*<Stack.Screen*/}
-      {/*  name="/calendar"*/}
-      {/*  component={CalendarScreen}*/}
-      {/*  options={{ headerTitle: "Calendrier" }}*/}
-      {/*/>*/}
+      <Stack.Screen
+        name="/partyPhotos"
+        component={PartyPhotos}
+        options={{ headerTitle: "Photos" }}
+      />
+      <Stack.Screen
+        name="/calendar"
+        component={CalendarScreen}
+        options={{ headerTitle: "Calendrier" }}
+      />
     </Stack.Navigator>
   );
 };
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <UserProvider>
       <SafeAreaProvider>
