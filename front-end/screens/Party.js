@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
@@ -7,15 +7,15 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-} from "react-native";
-import { getFirestore, collection, onSnapshot } from "firebase/firestore";
-import config from "../assets/config/colorsConfig";
-import AddPartyModal from "../components/AddPartyModal";
-import { UserContext } from "../context/UserContext";
-import { Button } from "react-native-paper";
+} from 'react-native';
+import {getFirestore, collection, onSnapshot} from 'firebase/firestore';
+import config from '../assets/config/colorsConfig';
+import AddPartyModal from '../components/AddPartyModal';
+import {UserContext} from '../context/UserContext';
+import {Button} from 'react-native-paper';
 
-const Party = ({ navigation }) => {
-  const { user } = useContext(UserContext);
+const Party = ({navigation}) => {
+  const {user} = useContext(UserContext);
   const [parties, setParties] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [nextParty, setNextParty] = useState(null);
@@ -25,8 +25,8 @@ const Party = ({ navigation }) => {
 
   useEffect(() => {
     const db = getFirestore();
-    const unsubscribe = onSnapshot(collection(db, "parties"), (snapshot) => {
-      const partiesList = snapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, 'parties'), snapshot => {
+      const partiesList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
@@ -34,10 +34,10 @@ const Party = ({ navigation }) => {
       if (partiesList.length > 0) {
         const currentDate = new Date();
         const futureParties = partiesList.filter(
-          (party) => new Date(party.date) >= currentDate
+          party => new Date(party.date) >= currentDate,
         );
         let pastPartiesList = partiesList.filter(
-          (party) => new Date(party.date) < currentDate
+          party => new Date(party.date) < currentDate,
         );
         pastPartiesList = pastPartiesList
           .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -65,12 +65,12 @@ const Party = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  const handleAddParty = async (newParty) => {
+  const handleAddParty = async newParty => {
     setIsLoading(true);
     setError(null);
     try {
       const db = getFirestore();
-      await db.collection("parties").add(newParty);
+      await db.collection('parties').add(newParty);
       setModalVisible(false);
     } catch (err) {
       setError("Erreur lors de l'ajout de la soirée");
@@ -79,15 +79,13 @@ const Party = ({ navigation }) => {
     }
   };
 
-  const renderPartyItem = ({ item }) => (
+  const renderPartyItem = ({item}) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate("/partyPhotos", { partyId: item.id })}
-    >
+      onPress={() => navigation.navigate('/partyPhotos', {partyId: item.id})}>
       <ImageBackground
-        source={{ uri: item.imageUrl }}
+        source={{uri: item.imageUrl}}
         style={styles.partyImage}
-        imageStyle={styles.partyImageRounded}
-      >
+        imageStyle={styles.partyImageRounded}>
         <View style={styles.smallMask}>
           <Text style={styles.smallPartyTitle}>{item.title}</Text>
         </View>
@@ -97,41 +95,39 @@ const Party = ({ navigation }) => {
 
   return (
     <ImageBackground source={config.backgroundImage} style={styles.container}>
-      {user && user.role === "admin" && (
+      {user && user.role === 'admin' && (
         <>
           <Button
             onPress={() => setModalVisible(true)}
             mode="contained"
             style={styles.addButton}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              "Ajouter une soirée"
+              'Ajouter une soirée'
             )}
           </Button>
           <AddPartyModal
             visible={isModalVisible}
             onClose={() => setModalVisible(false)}
-            onAddParty={handleAddParty} // Passer la fonction d'ajout
+            onAddParty={handleAddParty}
           />
         </>
       )}
       <View style={styles.navigationContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("Ticketing")}>
+        <TouchableOpacity onPress={() => navigation.navigate('Ticketing')}>
           <Text>Billetterie</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("/calendar")}>
+        <TouchableOpacity onPress={() => navigation.navigate('/calendar')}>
           <Text>Calendrier</Text>
         </TouchableOpacity>
       </View>
       {nextParty ? (
         <ImageBackground
-          source={{ uri: nextParty.imageUrl }}
+          source={{uri: nextParty.imageUrl}}
           style={styles.nextPartyImage}
-          imageStyle={styles.nextPartyImageRounded}
-        >
+          imageStyle={styles.nextPartyImageRounded}>
           <View style={styles.mask}>
             <Text style={styles.partyTitle}>
               {new Date(nextParty.date).toLocaleDateString()}
@@ -146,7 +142,7 @@ const Party = ({ navigation }) => {
       <FlatList
         data={pastParties}
         renderItem={renderPartyItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         numColumns={3}
         contentContainerStyle={styles.pastPartiesContainer}
       />
@@ -158,7 +154,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   addButton: {
     marginBottom: 10,
@@ -166,8 +162,8 @@ const styles = StyleSheet.create({
   partyImage: {
     width: 100,
     height: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     margin: 5,
   },
   partyImageRounded: {
@@ -176,59 +172,59 @@ const styles = StyleSheet.create({
   nextPartyImage: {
     width: 320,
     height: 240,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 10,
   },
   nextPartyImageRounded: {
     borderRadius: 20,
   },
   partyTitle: {
-    color: "white",
+    color: 'white',
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   text: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
     marginTop: 20,
   },
   errorText: {
-    color: "red",
+    color: 'red',
     marginTop: 10,
   },
   mask: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   smallMask: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   smallPartyTitle: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   pastPartiesContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
   },
   navigationContainer: {
-    flexDirection: "row",
-    backgroundColor: "gray",
+    flexDirection: 'row',
+    backgroundColor: 'gray',
     borderRadius: 20,
-    width: "90%",
+    width: '90%',
     padding: 16,
-    alignItems: "center",
-    justifyContent: "space-between",
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 20,
   },
 });

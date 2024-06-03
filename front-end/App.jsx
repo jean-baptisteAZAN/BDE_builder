@@ -1,11 +1,16 @@
-import React from 'react';
-import {useContext} from 'react';
-import {StyleSheet, TouchableOpacity, Image} from 'react-native';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {NavigationContainer} from '@react-navigation/native';
+import React, { useEffect, useState, useContext } from 'react';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  View,
+} from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import config from './assets/config/colorsConfig';
-import {UserProvider, UserContext} from './context/UserContext';
+import { UserProvider, UserContext } from './context/UserContext';
 import HomeScreen from './screens/HomeScreen';
 import Login from './screens/LoginScreen';
 import Signup from './screens/SignupScreen';
@@ -13,17 +18,20 @@ import ProfileScreen from './screens/ProfileScreen';
 import Party from './screens/Party';
 import PartyPhotos from './screens/PartyPhotos';
 import CalendarScreen from './screens/CalendarScreen';
+import Splash from './screens/Splash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from './firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   return (
     <Stack.Navigator
-      initialRouteName="/login"
-      screenOptions={({navigation}) => ({
-        headerStyle: {backgroundColor: 'black'},
+      screenOptions={({ navigation }) => ({
+        headerStyle: { backgroundColor: 'black' },
         headerTintColor: '#fff',
         headerLeft: () => (
           <TouchableOpacity onPress={() => navigation.navigate('/home')}>
@@ -43,7 +51,7 @@ const AppNavigator = () => {
             <Image
               source={
                 user && user.profilePictureUrl
-                  ? {uri: user.profilePictureUrl}
+                  ? { uri: user.profilePictureUrl }
                   : require('./assets/images/placeholder_pdp.jpeg')
               }
               style={{
@@ -55,76 +63,106 @@ const AppNavigator = () => {
             />
           </TouchableOpacity>
         ),
-      })}>
-      <Stack.Screen
-        name="/login"
-        component={Login}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="/signup"
-        component={Signup}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="/home"
-        component={HomeScreen}
-        options={{headerTitle: config.BdeName}}
-      />
-      <Stack.Screen
-        name="/party"
-        component={Party}
-        options={{ headerTitle: "Nos Soirées" }}
-      />
-      <Stack.Screen
-        name="/profile"
-        component={ProfileScreen}
-        options={{ headerTitle: "Ton Profil" }}
-      />
-      <Stack.Screen
-        name="/partyPhotos"
-        component={PartyPhotos}
-        options={{ headerTitle: "Photos" }}
-      />
-      <Stack.Screen
-        name="/calendar"
-        component={CalendarScreen}
-        options={{ headerTitle: "Calendrier" }}
-      />
+      })}
+    >
+      {user ? (
+        <>
+          <Stack.Screen
+            name="/home"
+            component={HomeScreen}
+            options={{ headerTitle: config.BdeName }}
+          />
+          <Stack.Screen
+            name="/party"
+            component={Party}
+            options={{ headerTitle: 'Nos Soirées' }}
+          />
+          <Stack.Screen
+            name="/profile"
+            component={ProfileScreen}
+            options={{ headerTitle: 'Ton Profil' }}
+          />
+          <Stack.Screen
+            name="/partyPhotos"
+            component={PartyPhotos}
+            options={{ headerTitle: 'Photos' }}
+          />
+          <Stack.Screen
+            name="/calendar"
+            component={CalendarScreen}
+            options={{ headerTitle: 'Calendrier' }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="/login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="/signup"
+            component={Signup}
+            options={{ headerShown: false }}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 };
 
 const App = () => {
+  const [initializing, setInitializing] = useState(true);
+  const { setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        onAuthStateChanged(auth, user => {
+          if (user) {
+            setUser(user);
+            setInitializing(false);
+          } else {
+            setInitializing(false);
+          }
+        });
+      } else {
+        setInitializing(false);
+      }
+    };
+    checkUser();
+  }, [setUser]);
+
+  if (initializing) {
+    <View>
+      <Image
+        animation="pulse"
+        easing="ease-out"
+        iterationCount="infinite"
+        source={require('./assets/images/logo.png')}
+        style={styles.logo}
+      />
+    </View>
+  }
+
   return (
-    <UserProvider>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.safeArea}>
-          <NavigationContainer>
-            <AppNavigator />
-          </NavigationContainer>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </UserProvider>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   safeArea: {
     flex: 1,
@@ -132,4 +170,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+const Root = () => (
+  <UserProvider>
+    <App />
+  </UserProvider>
+);
+
+export default Root;

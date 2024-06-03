@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, Modal, Image, TouchableOpacity } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  Modal,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import {Calendar} from 'react-native-calendars';
+import {getFirestore, collection, onSnapshot} from 'firebase/firestore';
 import config from '../assets/config/colorsConfig';
-import { Button } from 'react-native-paper';
+import {Button} from 'react-native-paper';
 
 const CalendarScreen = () => {
   const [events, setEvents] = useState([]);
@@ -13,18 +21,18 @@ const CalendarScreen = () => {
 
   useEffect(() => {
     const db = getFirestore();
-    const unsubscribe = onSnapshot(collection(db, 'parties'), (snapshot) => {
-      const eventsList = snapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, 'parties'), snapshot => {
+      const eventsList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
 
       const marked = {};
-      eventsList.forEach((event) => {
+      eventsList.forEach(event => {
         const date = event.date.split('T')[0];
         marked[date] = {
           marked: true,
-          dotColor: "red",
+          dotColor: 'red',
           activeOpacity: 0,
         };
       });
@@ -37,9 +45,9 @@ const CalendarScreen = () => {
     return unsubscribe;
   }, []);
 
-  const handleDayPress = (day) => {
+  const handleDayPress = day => {
     const selectedEvents = events.filter(
-      (event) => event.date.split('T')[0] === day.dateString
+      event => event.date.split('T')[0] === day.dateString,
     );
     if (selectedEvents.length > 0) {
       setSelectedEvent(selectedEvents[0]);
@@ -82,13 +90,17 @@ const CalendarScreen = () => {
           animationType="slide"
           transparent={true}
           visible={true}
-          onRequestClose={closeModal}
-        >
+          onRequestClose={closeModal}>
           <View style={styles.modalView}>
             <Text style={styles.eventTitle}>{selectedEvent.title}</Text>
-            <Image source={{ uri: selectedEvent.imageUrl }} style={styles.eventImage} />
-            <Text style={styles.eventDate}>{new Date(selectedEvent.date).toLocaleDateString()}</Text>
-            <Button mode="contained"  onPress={closeModal}>
+            <Image
+              source={{uri: selectedEvent.imageUrl}}
+              style={styles.eventImage}
+            />
+            <Text style={styles.eventDate}>
+              {new Date(selectedEvent.date).toLocaleDateString()}
+            </Text>
+            <Button mode="contained" onPress={closeModal}>
               Close
             </Button>
           </View>

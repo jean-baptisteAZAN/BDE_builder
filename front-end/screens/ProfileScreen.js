@@ -1,33 +1,29 @@
-import React, { useEffect, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  Button,
-  View,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { launchImageLibrary } from "react-native-image-picker";
-import config from "../assets/config/colorsConfig";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
-import { API_URL } from "@env";
+import React, {useEffect, useState, useContext} from 'react';
+import {Text, StyleSheet, Image, ImageBackground, View} from 'react-native';
+import {Button} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {launchImageLibrary} from 'react-native-image-picker';
+import config from '../assets/config/colorsConfig';
+import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {getFirestore, doc, updateDoc} from 'firebase/firestore';
+import {API_URL} from '@env';
+import {UserContext} from '../context/UserContext';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
   const [image, setImage] = useState(null);
+  const {logout} = useContext(UserContext);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const token = await AsyncStorage.getItem("userToken");
+        const token = await AsyncStorage.getItem('userToken');
         if (token) {
           const response = await fetch(`${API_URL}/api/userinfo`, {
-            method: "GET",
+            method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
           const data = await response.json();
@@ -37,7 +33,7 @@ const ProfileScreen = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching user info:", error);
+        console.error('Error fetching user info:', error);
       }
     };
 
@@ -52,19 +48,19 @@ const ProfileScreen = () => {
       quality: 1,
     };
 
-    launchImageLibrary(options, async (response) => {
+    launchImageLibrary(options, async response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
-        const { uri } = response.assets[0];
+        const {uri} = response.assets[0];
         await uploadImage(uri);
       }
     });
   };
 
-  const uploadImage = async (uri) => {
+  const uploadImage = async uri => {
     const response = await fetch(uri);
     const blob = await response.blob();
     const storage = getStorage();
@@ -73,69 +69,90 @@ const ProfileScreen = () => {
     const downloadURL = await getDownloadURL(storageRef);
     setImage(downloadURL);
     const db = getFirestore();
-    await updateDoc(doc(db, "users", userInfo.uid), {
+    await updateDoc(doc(db, 'users', userInfo.uid), {
       profilePictureUrl: downloadURL,
     });
 
-    setUserInfo((prev) => ({ ...prev, profilePictureUrl: downloadURL }));
+    setUserInfo(prev => ({...prev, profilePictureUrl: downloadURL}));
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigation.navigate('/login');
   };
 
   return (
     <ImageBackground source={config.backgroundImage} style={styles.container}>
-      {userInfo ? (
-        <>
-          <View style={styles.profileContainer}>
-            {image ? (
-              <Image source={{ uri: image }} style={styles.profileImage} />
-            ) : (
-              <Button title="Ajoute une photo de profile" onPress={pickImage} />
-            )}
-            <View style={styles.infoContainer}>
-              <Text style={styles.text}>{userInfo.firstName}</Text>
-              <Text style={styles.text}>{userInfo.lastName}</Text>
+      <View style={styles.containerWrapper}>
+        {userInfo ? (
+          <>
+            <View style={styles.profileContainer}>
+              {image ? (
+                <Image source={{uri: image}} style={styles.profileImage} />
+              ) : (
+                <Button onPress={pickImage} mode="contained">
+                  Ajoute une photo de profile
+                </Button>
+              )}
+              <View style={styles.infoContainer}>
+                <Text style={styles.text}>{userInfo.firstName}</Text>
+                <Text style={styles.text}>{userInfo.lastName}</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.detailsContainer}>
-            <Text style={styles.text}>Email: {userInfo.email}</Text>
-            <Text style={styles.text}>Promotion: {userInfo.promotion}</Text>
-            <Text style={styles.text}>Association: {userInfo.association}</Text>
-          </View>
-        </>
-      ) : (
-        <Text style={styles.text}>No user is logged in</Text>
-      )}
+            <View style={styles.detailsContainer}>
+              <Text style={styles.text}>Email: {userInfo.email}</Text>
+              <Text style={styles.text}>Promotion: {userInfo.promotion}</Text>
+              <Text style={styles.text}>Association: {userInfo.association}</Text>
+              <Button
+                mode="contained-tonal"
+                onPress={handleLogout}
+                color="#FF0000">
+                Déconnexion
+              </Button>
+            </View>
+          </>
+        ) : (
+          <Text style={styles.text}>No user is logged in</Text>
+        )}
+      </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  
+  containerWrapper: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+    padding: 20,
+  },
   container: {
     flex: 1,
+    padding: 10,
+    paddingTop: 50,
   },
   profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 20,
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 5,
+    width: '100%',
   },
   infoContainer: {
-    paddingLeft: 50,
-    justifyContent: "center",
+    paddingLeft: 10,
+    justifyContent: 'center',
   },
   detailsContainer: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   text: {
     fontSize: 25,
-    color: "white",
+    color: 'black',
     marginBottom: 10,
   },
   profileImage: {
     width: 150,
     height: 150,
-    borderRadius: 50,
+    borderRadius: 100,
     marginBottom: 20,
   },
 });

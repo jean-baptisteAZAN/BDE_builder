@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext} from 'react';
 import {
   Modal,
   View,
@@ -7,17 +7,17 @@ import {
   Image,
   Platform,
   Alert,
-} from "react-native";
-import { Button, Text } from "react-native-paper";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, addDoc, collection } from "firebase/firestore";
-import { launchImageLibrary } from "react-native-image-picker";
-import { UserContext } from "../context/UserContext";
-import DateTimePicker from "@react-native-community/datetimepicker";
+} from 'react-native';
+import {Button, Text} from 'react-native-paper';
+import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {getFirestore, addDoc, collection} from 'firebase/firestore';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {UserContext} from '../context/UserContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AddPartyModal = ({ visible, onClose }) => {
-  const { user } = useContext(UserContext);
-  const [title, setTitle] = useState("");
+const AddPartyModal = ({visible, onClose}) => {
+  const {user} = useContext(UserContext);
+  const [title, setTitle] = useState('');
   const [imageUri, setImageUri] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -31,7 +31,7 @@ const AddPartyModal = ({ visible, onClose }) => {
       quality: 1,
     };
 
-    launchImageLibrary(options, (response) => {
+    launchImageLibrary(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -42,7 +42,7 @@ const AddPartyModal = ({ visible, onClose }) => {
     });
   };
 
-  const uploadImage = async (uri) => {
+  const uploadImage = async uri => {
     const response = await fetch(uri);
     const blob = await response.blob();
     const storage = getStorage();
@@ -53,46 +53,46 @@ const AddPartyModal = ({ visible, onClose }) => {
 
   const handleAddParty = async () => {
     if (!title) {
-      Alert.alert("Error", "Please enter a title");
+      Alert.alert('Error', 'Please enter a title');
       return;
     }
     if (!imageUri) {
-      Alert.alert("Error", "Please pick an image");
+      Alert.alert('Error', 'Please pick an image');
       return;
     }
 
     try {
       const imageUrl = await uploadImage(imageUri);
       const db = getFirestore();
-      await addDoc(collection(db, "parties"), {
+      await addDoc(collection(db, 'parties'), {
         title,
         imageUrl,
         date: date.toISOString(),
         createdBy: user.uid,
       });
-      Alert.alert("Success", "Party added successfully");
+      Alert.alert('Success', 'Party added successfully');
       resetValues();
       onClose();
     } catch (error) {
-      console.error("Error adding party: ", error);
-      Alert.alert("Error", "An error occurred while adding the party.");
+      console.error('Error adding party: ', error);
+      Alert.alert('Error', 'An error occurred while adding the party.');
     }
   };
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShowDatePicker(Platform.OS === "ios");
+    setShowDatePicker(Platform.OS === 'ios');
     setDate(currentDate);
   };
 
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || date;
-    setShowTimePicker(Platform.OS === "ios");
+    setShowTimePicker(Platform.OS === 'ios');
     setDate(currentTime);
   };
 
   const resetValues = () => {
-    setTitle("");
+    setTitle('');
     setImageUri(null);
     setDate(new Date());
     setShowDatePicker(false);
@@ -109,21 +109,19 @@ const AddPartyModal = ({ visible, onClose }) => {
           style={styles.input}
         />
         <Button
-          mode={"contained-tonal"}
+          mode={'contained-tonal'}
           onPress={pickImage}
-          style={{ marginVertical: 20 }}
-        >
+          style={{marginVertical: 20}}>
           Pick an image
         </Button>
         {imageUri && (
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Image source={{uri: imageUri}} style={styles.imagePreview} />
         )}
 
         <Button
           onPress={() => setShowDatePicker(true)}
-          mode={"contained-tonal"}
-          style={styles.dateButton}
-        >
+          mode={'contained-tonal'}
+          style={styles.dateButton}>
           Pick Date
         </Button>
         {showDatePicker && (
@@ -141,9 +139,8 @@ const AddPartyModal = ({ visible, onClose }) => {
 
         <Button
           onPress={() => setShowTimePicker(true)}
-          mode={"contained-tonal"}
-          style={styles.dateButton}
-        >
+          mode={'contained-tonal'}
+          style={styles.dateButton}>
           Pick Time
         </Button>
         {showTimePicker && (
@@ -165,19 +162,17 @@ const AddPartyModal = ({ visible, onClose }) => {
 
         <Button
           onPress={handleAddParty}
-          mode={"contained"}
-          style={{ marginTop: 20 }}
-        >
+          mode={'contained'}
+          style={{marginTop: 20}}>
           Add Party
         </Button>
         <Button
-          mode={"contained-tonal"}
-          style={{ marginTop: 20 }}
+          mode={'contained-tonal'}
+          style={{marginTop: 20}}
           onPress={() => {
             resetValues();
             onClose();
-          }}
-        >
+          }}>
           Close panel
         </Button>
       </View>
@@ -188,16 +183,16 @@ const AddPartyModal = ({ visible, onClose }) => {
 const styles = StyleSheet.create({
   modalView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     padding: 20,
   },
   input: {
-    width: "80%",
+    width: '80%',
     padding: 10,
     marginVertical: 10,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 5,
   },
   imagePreview: {
@@ -207,13 +202,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   dateButton: {
-    backgroundColor: "#6200ea",
-    color: "white",
+    backgroundColor: '#6200ea',
+    color: 'white',
     marginVertical: 10,
-    width: "80%",
+    width: '80%',
   },
   pickerContainer: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 10,
     marginVertical: 10,
     padding: 10,
@@ -221,7 +216,7 @@ const styles = StyleSheet.create({
   selectedDateText: {
     marginTop: 10,
     fontSize: 16,
-    color: "white",
+    color: 'white',
   },
 });
 
