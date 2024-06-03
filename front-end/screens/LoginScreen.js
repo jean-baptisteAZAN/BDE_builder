@@ -53,7 +53,7 @@ const LoginScreen = ({navigation}) => {
 
         <View style={styles.inputContainer}>
         <View style={styles.iconContainer}>
-          <Icon name="lock" size={20} color="black" />
+          <Icon name="envelope" size={20} color="black" />
         </View>
         <TextInput
           style={[styles.input, emailFocused && styles.inputFocused]}
