@@ -26,7 +26,6 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
@@ -47,7 +46,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>We need your permission to use your camera to take photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -56,7 +55,7 @@
 	<string>We need your permission to save photos to your photo library.</string>
 	<key>UIAppFonts</key>
 	<array>
-	<string>FontAwesome.ttf</string>
+		<string>FontAwesome.ttf</string>
 	</array>
 </dict>
 </plist>

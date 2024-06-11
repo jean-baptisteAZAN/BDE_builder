@@ -7,18 +7,22 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Alert
 } from 'react-native';
 import {getFirestore, collection, onSnapshot} from 'firebase/firestore';
 import config from '../assets/config/colorsConfig';
 import AddPartyModal from '../components/AddPartyModal';
+import EditPartyModal from '../components/EditPartyModal'; // Import du nouveau composant
 import {UserContext} from '../context/UserContext';
 import {Button} from 'react-native-paper';
 
 const Party = ({navigation}) => {
   const {user} = useContext(UserContext);
   const [parties, setParties] = useState([]);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
   const [nextParty, setNextParty] = useState(null);
+  const [selectedParty, setSelectedParty] = useState(null);
   const [pastParties, setPastParties] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -71,9 +75,24 @@ const Party = ({navigation}) => {
     try {
       const db = getFirestore();
       await db.collection('parties').add(newParty);
-      setModalVisible(false);
+      setAddModalVisible(false);
     } catch (err) {
       setError("Erreur lors de l'ajout de la soirée");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditParty = async updatedParty => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const db = getFirestore();
+      await db.collection('parties').doc(updatedParty.id).update(updatedParty);
+      setEditModalVisible(false);
+      Alert.alert('Succès', 'La soirée a été mise à jour avec succès');
+    } catch (err) {
+      setError('Erreur lors de la mise à jour de la soirée');
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +117,7 @@ const Party = ({navigation}) => {
       {user && user.role === 'admin' && (
         <>
           <Button
-            onPress={() => setModalVisible(true)}
+            onPress={() => setAddModalVisible(true)}
             mode="contained"
             style={styles.addButton}
             disabled={isLoading}>
@@ -109,8 +128,8 @@ const Party = ({navigation}) => {
             )}
           </Button>
           <AddPartyModal
-            visible={isModalVisible}
-            onClose={() => setModalVisible(false)}
+            visible={isAddModalVisible}
+            onClose={() => setAddModalVisible(false)}
             onAddParty={handleAddParty}
           />
         </>
@@ -124,17 +143,25 @@ const Party = ({navigation}) => {
         </TouchableOpacity>
       </View>
       {nextParty ? (
-        <ImageBackground
-          source={{uri: nextParty.imageUrl}}
-          style={styles.nextPartyImage}
-          imageStyle={styles.nextPartyImageRounded}>
-          <View style={styles.mask}>
-            <Text style={styles.partyTitle}>
-              {new Date(nextParty.date).toLocaleDateString()}
-            </Text>
-            <Text style={styles.partyTitle}>{nextParty.title}</Text>
-          </View>
-        </ImageBackground>
+        <TouchableOpacity
+          onPress={() => {
+            if (user && user.role === 'admin') {
+              setSelectedParty(nextParty);
+              setEditModalVisible(true);
+            }
+          }}>
+          <ImageBackground
+            source={{uri: nextParty.imageUrl}}
+            style={styles.nextPartyImage}
+            imageStyle={styles.nextPartyImageRounded}>
+            <View style={styles.mask}>
+              <Text style={styles.partyTitle}>
+                {new Date(nextParty.date).toLocaleDateString()}
+              </Text>
+              <Text style={styles.partyTitle}>{nextParty.title}</Text>
+            </View>
+          </ImageBackground>
+        </TouchableOpacity>
       ) : (
         <Text style={styles.text}>No upcoming parties</Text>
       )}
@@ -146,6 +173,14 @@ const Party = ({navigation}) => {
         numColumns={3}
         contentContainerStyle={styles.pastPartiesContainer}
       />
+      {selectedParty && (
+        <EditPartyModal
+          visible={isEditModalVisible}
+          onClose={() => setEditModalVisible(false)}
+          party={selectedParty}
+          onEditParty={handleEditParty}
+        />
+      )}
     </ImageBackground>
   );
 };

@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  View,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,7 +12,6 @@ import ProfileScreen from './screens/ProfileScreen';
 import Party from './screens/Party';
 import PartyPhotos from './screens/PartyPhotos';
 import CalendarScreen from './screens/CalendarScreen';
-import Splash from './screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -63,8 +56,7 @@ const AppNavigator = () => {
             />
           </TouchableOpacity>
         ),
-      })}
-    >
+      })}>
       {user ? (
         <>
           <Stack.Screen
@@ -122,10 +114,8 @@ const App = () => {
         onAuthStateChanged(auth, user => {
           if (user) {
             setUser(user);
-            setInitializing(false);
-          } else {
-            setInitializing(false);
           }
+          setInitializing(false);
         });
       } else {
         setInitializing(false);
@@ -135,15 +125,11 @@ const App = () => {
   }, [setUser]);
 
   if (initializing) {
-    <View>
-      <Image
-        animation="pulse"
-        easing="ease-out"
-        iterationCount="infinite"
-        source={require('./assets/images/logo.png')}
-        style={styles.logo}
-      />
-    </View>
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
@@ -158,7 +144,7 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
