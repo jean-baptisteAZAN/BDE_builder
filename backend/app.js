@@ -58,4 +58,14 @@ app.get("/api/userinfo", async (req, res) => {
   }
 });
 
+app.get("/check-env", (req, res) => {
+  res.json({
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
+    FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+    FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID
+  });
+});
+
 module.exports = app;
+
