@@ -1,3 +1,6 @@
+// Chargement des variables d'environnement
+require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const admin = require("firebase-admin");
@@ -6,7 +9,20 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(cors({ origin: "http://192.168.0.14:5173" }));
 
-const serviceAccount = require("./firebase-key.json");
+// Configuration Firebase avec les variables d'environnement
+const serviceAccount = {
+  type: process.env.TYPE,
+  project_id: process.env.PROJECT_ID,
+  private_key_id: process.env.PRIVATE_KEY_ID,
+  private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'), // Remplace les '\n' par des sauts de ligne réels
+  client_email: process.env.CLIENT_EMAIL,
+  client_id: process.env.CLIENT_ID,
+  auth_uri: process.env.AUTH_URI,
+  token_uri: process.env.TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
+  universe_domain: process.env.UNIVERSE_DOMAIN
+};
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -31,7 +47,6 @@ app.get("/api/userinfo", async (req, res) => {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
-    // Récupérer les informations de l'utilisateur depuis Firestore
     const userDoc = await db.collection("users").doc(uid).get();
 
     if (!userDoc.exists) {
