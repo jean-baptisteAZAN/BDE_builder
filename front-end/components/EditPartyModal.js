@@ -9,10 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import {Button, Text} from 'react-native-paper';
-import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {UserContext} from '../context/UserContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {storage} from "../firebaseConfig"
 
 const EditPartyModal = ({visible, onClose, party, onEditParty}) => {
   const {user} = useContext(UserContext);
@@ -47,11 +48,10 @@ const EditPartyModal = ({visible, onClose, party, onEditParty}) => {
 
   const uploadImage = async uri => {
     if (uri.startsWith('http')) {
-      return uri; // L'image est déjà en ligne
+      return uri;
     }
     const response = await fetch(uri);
     const blob = await response.blob();
-    const storage = getStorage();
     const storageRef = ref(storage, `partyHeader/${Date.now()}`);
     await uploadBytes(storageRef, blob);
     return await getDownloadURL(storageRef);

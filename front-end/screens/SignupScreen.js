@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
   View,
   TextInput,
-  Pressable,
   StyleSheet,
   Text,
   ImageBackground,
@@ -12,8 +11,8 @@ import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import config from '../assets/config/colorsConfig';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth, firestore} from '../firebaseConfig';
-import {getFirestore, doc, setDoc} from 'firebase/firestore';
+import {auth, db} from '../firebaseConfig';
+import {doc, setDoc} from 'firebase/firestore';
 
 const Signup = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -24,8 +23,6 @@ const Signup = ({navigation}) => {
   const [association, setAssociation] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-
-  const db = firestore;
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -56,45 +53,46 @@ const Signup = ({navigation}) => {
 
   return (
     <ImageBackground source={config.backgroundImage} style={styles.container}>
-      <Text className="text-2xl text-white mt-10">Créer un compte</Text>
+      <View style={styles.containerWhite}>
+      <Text style={{fontSize: 20}}>Créer un compte</Text>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}>
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="user" size={20} color="#fff" />
+            <Icon name="user" size={20} color="black" />
           </View>
           <TextInput
             style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Prénom"
             value={firstName}
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             onChangeText={setFirstName}
           />
         </View>
 
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="user" size={20} color="#fff" />
+            <Icon name="user" size={20} color="black" />
           </View>
           <TextInput
             style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Nom"
             value={lastName}
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             onChangeText={setLastName}
           />
         </View>
 
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="envelope" size={20} color="#fff" />
+            <Icon name="envelope" size={20} color="black" />
           </View>
           <TextInput
             style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Email"
             value={email}
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             onChangeText={setEmail}
             keyboardType="email-address"
             onFocus={() => setEmailFocused(true)}
@@ -104,13 +102,13 @@ const Signup = ({navigation}) => {
 
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="lock" size={20} color="#fff" />
+            <Icon name="lock" size={20} color="black" />
           </View>
           <TextInput
             style={[styles.input, passwordFocused && styles.inputFocused]}
             placeholder="Mot de passe"
             value={password}
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             onChangeText={setPassword}
             secureTextEntry
             onFocus={() => setPasswordFocused(true)}
@@ -120,13 +118,13 @@ const Signup = ({navigation}) => {
 
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="group" size={20} color="#fff" />
+            <Icon name="group" size={20} color="black" />
           </View>
           <TextInput
             style={[styles.input, emailFocused && styles.inputFocused]}
             placeholder="Fais-tu partie d'une asso ?"
             value={association}
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             onChangeText={setAssociation}
           />
         </View>
@@ -134,6 +132,7 @@ const Signup = ({navigation}) => {
           Créer mon compte !
         </Button>
       </ScrollView>
+      </View>
     </ImageBackground>
   );
 };
@@ -190,6 +189,16 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  containerWhite: {
+    borderRadius: 20,
+    padding: 20,
+    gap: 5,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    justifyContent: 'center',
+    height: '52%',
   },
 });
 

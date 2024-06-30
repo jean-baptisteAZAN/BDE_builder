@@ -9,11 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import {Button, Text} from 'react-native-paper';
-import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {getFirestore, addDoc, collection} from 'firebase/firestore';
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {addDoc, collection} from 'firebase/firestore';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {UserContext} from '../context/UserContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { db, storage } from '../firebaseConfig';
 
 const AddPartyModal = ({visible, onClose}) => {
   const {user} = useContext(UserContext);
@@ -43,7 +44,6 @@ const AddPartyModal = ({visible, onClose}) => {
   const uploadImage = async uri => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    const storage = getStorage();
     const storageRef = ref(storage, `partyHeader/${Date.now()}`);
     await uploadBytes(storageRef, blob);
     return await getDownloadURL(storageRef);
@@ -61,7 +61,6 @@ const AddPartyModal = ({visible, onClose}) => {
 
     try {
       const imageUrl = await uploadImage(imageUri);
-      const db = getFirestore();
       await addDoc(collection(db, 'parties'), {
         title,
         imageUrl,

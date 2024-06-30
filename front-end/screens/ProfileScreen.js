@@ -4,10 +4,12 @@ import {Button} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {launchImageLibrary} from 'react-native-image-picker';
 import config from '../assets/config/colorsConfig';
-import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {getFirestore, doc, updateDoc} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import { doc, updateDoc} from 'firebase/firestore';
 import {API_URL} from '@env';
 import {UserContext} from '../context/UserContext';
+import { db } from '../firebaseConfig';
+
 
 const ProfileScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -62,12 +64,10 @@ const ProfileScreen = ({navigation}) => {
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
-      const storage = getStorage();
       const storageRef = ref(storage, `profilePictures/${userInfo.uid}`);
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
       setImage(downloadURL);
-      const db = getFirestore();
       await updateDoc(doc(db, 'users', userInfo.uid), {
         profilePictureUrl: downloadURL,
       });

@@ -15,6 +15,7 @@ import AddPartyModal from '../components/AddPartyModal';
 import EditPartyModal from '../components/EditPartyModal';
 import {UserContext} from '../context/UserContext';
 import {Button} from 'react-native-paper';
+import { app, db } from '../firebaseConfig';
 
 const Party = ({navigation}) => {
   const {user} = useContext(UserContext);
@@ -28,7 +29,6 @@ const Party = ({navigation}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const db = getFirestore();
     const unsubscribe = onSnapshot(collection(db, 'parties'), snapshot => {
       const partiesList = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -73,7 +73,6 @@ const Party = ({navigation}) => {
     setIsLoading(true);
     setError(null);
     try {
-      const db = getFirestore();
       await db.collection('parties').add(newParty);
       setAddModalVisible(false);
     } catch (err) {
@@ -87,7 +86,6 @@ const Party = ({navigation}) => {
     setIsLoading(true);
     setError(null);
     try {
-      const db = getFirestore();
       await db.collection('parties').doc(updatedParty.id).update(updatedParty);
       setEditModalVisible(false);
       Alert.alert('Succès', 'La soirée a été mise à jour avec succès');

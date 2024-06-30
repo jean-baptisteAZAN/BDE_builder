@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,9 +12,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import Party from './screens/Party';
 import PartyPhotos from './screens/PartyPhotos';
 import CalendarScreen from './screens/CalendarScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from './firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -77,7 +75,7 @@ const AppNavigator = () => {
           <Stack.Screen
             name="/partyPhotos"
             component={PartyPhotos}
-            options={{ headerTitle: 'Photos' }}
+            options={{ headerTitle: 'Vos photos de la soirée' }}
           />
           <Stack.Screen
             name="/calendar"

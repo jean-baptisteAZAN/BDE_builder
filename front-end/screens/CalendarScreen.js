@@ -6,12 +6,12 @@ import {
   ActivityIndicator,
   Modal,
   Image,
-  TouchableOpacity,
 } from 'react-native';
 import {Calendar} from 'react-native-calendars';
-import {getFirestore, collection, onSnapshot} from 'firebase/firestore';
+import {collection, onSnapshot} from 'firebase/firestore';
 import config from '../assets/config/colorsConfig';
 import {Button} from 'react-native-paper';
+import {db} from '../firebaseConfig';
 
 const CalendarScreen = () => {
   const [events, setEvents] = useState([]);
@@ -20,7 +20,6 @@ const CalendarScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const db = getFirestore();
     const unsubscribe = onSnapshot(collection(db, 'parties'), snapshot => {
       const eventsList = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -29,12 +28,14 @@ const CalendarScreen = () => {
 
       const marked = {};
       eventsList.forEach(event => {
-        const date = event.date.split('T')[0];
-        marked[date] = {
-          marked: true,
-          dotColor: 'red',
-          activeOpacity: 0,
-        };
+        if (event.date) {
+          const date = event.date.split('T')[0];
+          marked[date] = {
+            marked: true,
+            dotColor: 'red',
+            activeOpacity: 0,
+          };
+        }
       });
 
       setEvents(eventsList);
@@ -47,7 +48,7 @@ const CalendarScreen = () => {
 
   const handleDayPress = day => {
     const selectedEvents = events.filter(
-      event => event.date.split('T')[0] === day.dateString,
+      event => event.date && event.date.split('T')[0] === day.dateString,
     );
     if (selectedEvents.length > 0) {
       setSelectedEvent(selectedEvents[0]);

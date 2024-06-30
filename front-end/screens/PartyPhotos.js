@@ -12,17 +12,17 @@ import {
 } from 'react-native';
 import {Button, ProgressBar} from 'react-native-paper';
 import {
-  getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
-import {getFirestore, doc, updateDoc, onSnapshot} from 'firebase/firestore';
+import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
 import {launchImageLibrary} from 'react-native-image-picker';
 import RNFS from 'react-native-fs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {UserContext} from '../context/UserContext';
 import config from '../assets/config/colorsConfig';
+import {db, storage} from '../firebaseConfig';
 
 const PartyPhotos = ({route, navigation}) => {
   const {user} = useContext(UserContext);
@@ -34,7 +34,6 @@ const PartyPhotos = ({route, navigation}) => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
 
   useEffect(() => {
-    const db = getFirestore();
     const unsubscribe = onSnapshot(doc(db, 'parties', partyId), doc => {
       if (doc.exists()) {
         setPhotos(doc.data().photos || []);
@@ -62,8 +61,6 @@ const PartyPhotos = ({route, navigation}) => {
   const uploadImages = async uris => {
     try {
       setUploading(true);
-      const db = getFirestore();
-      const storage = getStorage();
       const uploadedUrls = [];
 
       for (const uri of uris) {
