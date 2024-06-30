@@ -49,9 +49,7 @@ const ProfileScreen = ({navigation}) => {
     };
 
     launchImageLibrary(options, async response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
+     if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
         const {uri} = response.assets[0];
@@ -61,20 +59,26 @@ const ProfileScreen = ({navigation}) => {
   };
 
   const uploadImage = async uri => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const storage = getStorage();
-    const storageRef = ref(storage, `profilePictures/${userInfo.uid}`);
-    await uploadBytes(storageRef, blob);
-    const downloadURL = await getDownloadURL(storageRef);
-    setImage(downloadURL);
-    const db = getFirestore();
-    await updateDoc(doc(db, 'users', userInfo.uid), {
-      profilePictureUrl: downloadURL,
-    });
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storage = getStorage();
+      const storageRef = ref(storage, `profilePictures/${userInfo.uid}`);
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      setImage(downloadURL);
+      const db = getFirestore();
+      await updateDoc(doc(db, 'users', userInfo.uid), {
+        profilePictureUrl: downloadURL,
+      });
 
-    setUserInfo(prev => ({...prev, profilePictureUrl: downloadURL}));
+      setUserInfo(prev => ({...prev, profilePictureUrl: downloadURL}));
+    }
+    catch (error) {
+    console.error('Error uploading image:', error);
+    }
   };
+
 
   const handleLogout = async () => {
     await logout();

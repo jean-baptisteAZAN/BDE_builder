@@ -37,9 +37,7 @@ const EditPartyModal = ({visible, onClose, party, onEditParty}) => {
     };
 
     launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
+       if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
         setImageUri(response.assets[0].uri);

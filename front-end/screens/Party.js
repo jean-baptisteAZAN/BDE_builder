@@ -12,7 +12,7 @@ import {
 import {getFirestore, collection, onSnapshot} from 'firebase/firestore';
 import config from '../assets/config/colorsConfig';
 import AddPartyModal from '../components/AddPartyModal';
-import EditPartyModal from '../components/EditPartyModal'; // Import du nouveau composant
+import EditPartyModal from '../components/EditPartyModal';
 import {UserContext} from '../context/UserContext';
 import {Button} from 'react-native-paper';
 

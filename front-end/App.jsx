@@ -104,34 +104,6 @@ const AppNavigator = () => {
 };
 
 const App = () => {
-  const [initializing, setInitializing] = useState(true);
-  const { setUser } = useContext(UserContext);
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const token = await AsyncStorage.getItem('userToken');
-      if (token) {
-        onAuthStateChanged(auth, user => {
-          if (user) {
-            setUser(user);
-          }
-          setInitializing(false);
-        });
-      } else {
-        setInitializing(false);
-      }
-    };
-    checkUser();
-  }, [setUser]);
-
-  if (initializing) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
@@ -142,7 +114,6 @@ const App = () => {
     </SafeAreaProvider>
   );
 };
-
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
