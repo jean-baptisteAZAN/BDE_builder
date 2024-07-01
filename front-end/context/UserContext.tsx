@@ -1,6 +1,6 @@
-import React, {createContext, useState, useEffect, ReactNode} from 'react';
+import React, { createContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API_URL} from "@env";
+import { API_URL } from "@env";
 
 interface UserContextType {
   user: any;
@@ -9,11 +9,9 @@ interface UserContextType {
   logout: () => Promise<void>;
 }
 
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined,
-);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider = ({children}: {children: ReactNode}) => {
+export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -65,8 +63,15 @@ export const UserProvider = ({children}: {children: ReactNode}) => {
     }
   };
 
+  const contextValue = useMemo(() => ({
+    user,
+    setUser,
+    login,
+    logout,
+  }), [user]);
+
   return (
-    <UserContext.Provider value={{user, setUser, login, logout}}>
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );

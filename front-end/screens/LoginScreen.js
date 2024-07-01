@@ -33,10 +33,8 @@ const LoginScreen = ({navigation}) => {
       const token = await user.getIdToken();
       await AsyncStorage.setItem('userToken', token);
       await login(token);
-      navigation.navigate('/home');
+      navigation.navigate('/hubAssociations');
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
       alert('Adresse email ou mot de passe incorrect.');
     }
   };

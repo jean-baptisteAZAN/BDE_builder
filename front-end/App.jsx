@@ -5,14 +5,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import config from './assets/config/colorsConfig';
 import { UserProvider, UserContext } from './context/UserContext';
-import HomeScreen from './screens/HomeScreen';
 import Login from './screens/LoginScreen';
 import Signup from './screens/SignupScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import Party from './screens/Party';
-import PartyPhotos from './screens/PartyPhotos';
 import CalendarScreen from './screens/CalendarScreen';
-
+import HubAssociations from './screens/HubAssociations';
+import AssociationHome from './screens/AssociationHome';
+import AssociationEvents from './screens/AssociationEvents';
+import EventPictures from './screens/EventPictures';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +25,7 @@ const AppNavigator = () => {
         headerStyle: { backgroundColor: 'black' },
         headerTintColor: '#fff',
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('/home')}>
+          <TouchableOpacity onPress={() => navigation.navigate('/hubAssociations')}>
             <Image
               source={config.logo}
               style={{
@@ -58,24 +58,30 @@ const AppNavigator = () => {
       {user ? (
         <>
           <Stack.Screen
-            name="/home"
-            component={HomeScreen}
-            options={{ headerTitle: config.BdeName }}
+            name="/hubAssociations"
+            component={HubAssociations}
+            options={{ headerTitle: 'Les Associations de l\'école' }}
           />
           <Stack.Screen
-            name="/party"
-            component={Party}
-            options={{ headerTitle: 'Nos Soirées' }}
+            name="/associationHome"
+            component={AssociationHome}
+            options={{ headerTitle: 'Association' }}
+          />
+          <Stack.Screen
+            name="/eventPicture"
+            component={EventPictures}
+            options={{ headerTitle: 'Photos' }}
+          />
+
+          <Stack.Screen
+            name='/associationEvents'
+            component={AssociationEvents}
+            options={{ headerTitle: 'Nos Événements' }}
           />
           <Stack.Screen
             name="/profile"
             component={ProfileScreen}
             options={{ headerTitle: 'Ton Profil' }}
-          />
-          <Stack.Screen
-            name="/partyPhotos"
-            component={PartyPhotos}
-            options={{ headerTitle: 'Vos photos de la soirée' }}
           />
           <Stack.Screen
             name="/calendar"
